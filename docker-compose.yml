@@ -1,0 +1,71 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: wp_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp_network
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wp_site
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppassword
+    volumes:
+      - wp_data:/var/www/html
+      - "./ancien site/wp-content:/var/www/html/wp-content"
+    networks:
+      - wp_network
+
+  wpcli:
+    image: wordpress:cli
+    container_name: wp_cli
+    depends_on:
+      - db
+      - wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - "./ancien site/wp-content:/var/www/html/wp-content"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wppassword
+    networks:
+      - wp_network
+    entrypoint: ["tail", "-f", "/dev/null"]
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: wp_phpmyadmin
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOST: db
+    networks:
+      - wp_network
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  wp_network:

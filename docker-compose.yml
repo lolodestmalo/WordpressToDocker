@@ -28,7 +28,7 @@ services:
       WORDPRESS_DB_PASSWORD: wppassword
     volumes:
       - wp_data:/var/www/html
-      - "./ancien site/wp-content:/var/www/html/wp-content"
+      - "path/to/wp-content:/var/www/html/wp-content" # CHANGE THE PATH
     networks:
       - wp_network
 
@@ -40,7 +40,7 @@ services:
       - wordpress
     volumes:
       - wp_data:/var/www/html
-      - "./ancien site/wp-content:/var/www/html/wp-content"
+      - "path/to/wp-content:/var/www/html/wp-content" # CHANGE THE PATH
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_NAME: wordpress
